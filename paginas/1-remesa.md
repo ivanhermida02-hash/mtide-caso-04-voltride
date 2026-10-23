@@ -1,7 +1,9 @@
-<!-- pendiente: borra esta línea cuando empieces a escribir la página -->
 # 1 · La remesa nueva
 
-> ✏️ Qué llegó: la entrega del parte con fecha de carga 2026-05-04. ¿Qué venía mal? Di qué columna, desde cuándo y cuántas filas.
-> ✏️ Cómo lo descubriste: qué test se puso rojo y qué decía. Si ninguno lo hizo, ¿qué te hizo sospechar?
-> ✏️ Cómo lo arreglaste en plata, y por qué ahí y no en bronce.
-> ✏️ Cierra con una cifra automática, por ejemplo: «plata tiene ahora {{ stg_parte.filas }} trayectos, sin perder ninguna».
+**Qué llegó.** El 4 de mayo el sistema de VoltRide dejó en bronce una entrega nueva del parte (`fecha_carga=2026-05-04`) con unos diez días más de trayectos. El problema estaba en la columna `bateria_pct`: desde el **{{ calidad_parte.desde[0] }}**, día en que se actualizó el firmware de los patinetes, la batería gastada ya no llega en puntos porcentuales sino como fracción (llega `0.071` donde antes llegaba `7.1`). Son **{{ calidad_parte.filas[0] }} trayectos**, todos de esa remesa: los diez primeros días de la entrega están bien y el resto viene en la unidad nueva.
+
+**Cómo lo descubrí.** Al lanzar `dbt build`, el test `rango_consumo` se puso rojo con **FAIL 59**: exige que la batería esté entre 1,75 y 38,2 %, el rango creíble del negocio. Con `dbt show --select rango_consumo` vi las filas rechazadas y con `dbt show --inline` sobre `source('bronce', 'parte')`, agrupando por `fecha_carga` y `fecha`, comprobé tres cosas: que solo pasaba en la entrega del 4 de mayo, que empezaba justo el 29 de abril y que ya venía así en bronce (no era un error de plata). El consumo por minuto de esas filas era cien veces más pequeño que el del resto, y los minutos y los importes eran normales: era la misma medida en otra unidad, no un patinete roto.
+
+**Cómo lo arreglé.** En `stg_parte.sql`, en plata: cuando `bateria_pct` es menor que 1, la multiplico por 100. Lo hago por el valor y no por la fecha, para que una entrega futura con cualquiera de los dos firmwares se trate bien, y así no se pierde ninguna fila. No toco bronce porque bronce es la prueba de lo que la empresa nos mandó: si mañana alguien pregunta qué llegó, tiene que poder verlo tal cual. Además dejé la columna `bateria_corregida` para saber qué filas se han tocado y un test nuevo, `bateria_en_porcentaje`, que se pone rojo si alguna batería de plata vuelve a quedar por debajo de 1.
+
+Plata tiene ahora **{{ stg_parte.filas }} trayectos**, sin perder ninguno (lo vigila el test `filas_conservadas`), y ya con las dos entregas juntas.
