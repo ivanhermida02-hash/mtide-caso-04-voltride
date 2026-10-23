@@ -13,3 +13,35 @@ models:
           - accepted_values:
               arguments:
                 values: ["Centro", "Campus", "Playa", "Estación", "Parque tecnológico", "Barrio antiguo", "Puerto", "Ronda"]
+  - name: stg_aparcamientos
+    description: "Plazas de aparcamiento por zona"
+    columns:
+      - name: zona
+        data_tests:
+          - unique
+          - not_null
+          - accepted_values:
+              arguments:
+                values: ["Centro", "Campus", "Playa", "Estación", "Parque tecnológico", "Barrio antiguo", "Puerto", "Ronda"]
+      - name: plazas
+        data_tests: [not_null]
+  - name: stg_eventos
+    description: "Registro de alquileres de la app: un evento por fila, sin reenvíos"
+    columns:
+      - name: evento_id
+        description: "TEST PROTAGONISTA · cada evento cuenta una sola vez"
+        data_tests: [unique, not_null]
+      - name: alquiler_id
+        data_tests: [not_null]
+      - name: tipo
+        data_tests:
+          - accepted_values:
+              arguments:
+                values: ["inicio", "fin"]
+      - name: zona
+        data_tests:
+          - not_null
+          - relationships:
+              arguments:
+                to: ref('stg_aparcamientos')
+                field: zona

@@ -56,3 +56,14 @@ models:
     columns:
       - name: patinete
         data_tests: [unique, not_null]
+  - name: pregunta_4
+    description: "¿En qué zona se piden más alquileres por plaza de aparcamiento? De mayor a menor"
+    columns:
+      - name: zona
+        data_tests:
+          - unique
+          - not_null
+          - relationships:
+              arguments:
+                to: ref('stg_aparcamientos')
+                field: zona
