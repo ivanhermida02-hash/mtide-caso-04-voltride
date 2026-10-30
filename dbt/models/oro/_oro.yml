@@ -1,0 +1,58 @@
+version: 2
+models:
+  - name: dim_usuario
+    description: "Una fila por usuario (nombre normalizado en mayúsculas)"
+    columns:
+      - name: usuario
+        data_tests: [unique, not_null]
+  - name: dim_patinete
+    description: "Una fila por patinete"
+    columns:
+      - name: patinete
+        data_tests: [unique, not_null]
+  - name: dim_zona
+    description: "Una fila por zona de la ciudad"
+    columns:
+      - name: zona
+        data_tests: [unique, not_null]
+  - name: fact_trayectos
+    description: "Un trayecto por fila: la estrella del parte"
+    columns:
+      - name: trayecto
+        data_tests: [unique, not_null]
+      - name: usuario
+        data_tests:
+          - not_null
+          - relationships:
+              arguments:
+                to: ref('dim_usuario')
+                field: usuario
+      - name: patinete
+        data_tests:
+          - not_null
+          - relationships:
+              arguments:
+                to: ref('dim_patinete')
+                field: patinete
+      - name: zona
+        data_tests:
+          - not_null
+          - relationships:
+              arguments:
+                to: ref('dim_zona')
+                field: zona
+  - name: pregunta_1
+    description: "¿Qué zona deja menos ingreso por minuto? De menor a mayor"
+    columns:
+      - name: zona
+        data_tests: [unique, not_null]
+  - name: pregunta_2
+    description: "¿Qué usuario gasta más batería por minuto? De mayor a menor"
+    columns:
+      - name: usuario
+        data_tests: [unique, not_null]
+  - name: pregunta_3
+    description: "¿Qué patinete acumula más incidencias por 100 min? De mayor a menor"
+    columns:
+      - name: patinete
+        data_tests: [unique, not_null]

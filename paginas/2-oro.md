@@ -1,8 +1,13 @@
-<!-- pendiente: borra esta línea cuando empieces a escribir la página -->
 # 2 · El oro
 
-> ✏️ Tu estrella: qué es una fila de `fact_trayectos` ({{ fact_trayectos.filas }} filas) y qué dimensiones la rodean.
-> ✏️ Pregunta 1 · ¿Qué **zona** deja menos ingreso por minuto de trayecto? Tu respuesta, con marcas: {{ pregunta_1.zona[0] }} con {{ pregunta_1.ingreso_min[0] }} €/min.
-> ✏️ Pregunta 2 · ¿Qué **usuario** gasta más batería por minuto? Con {{ pregunta_2.usuario[0] }} y {{ pregunta_2.bateria_10min[0] }}.
-> ✏️ Pregunta 3 · ¿Qué **patinete** acumula más incidencias por cada 100 minutos de uso? Con {{ pregunta_3.patinete[0] }} y {{ pregunta_3.incidencias_100min[0] }}.
-> ✏️ Con la remesa nueva, ¿se mantienen las respuestas de la J3? ¿Por qué crees que sí o que no?
+**La estrella.** En el centro está `fact_trayectos`, con **{{ fact_trayectos.filas }} filas**: cada fila es un trayecto del parte (el grano más fino que tenemos), con sus medidas: minutos, batería gastada, importe y si tuvo incidencia. A su alrededor, tres dimensiones: `dim_usuario` ({{ dim_usuario.filas }} usuarios), `dim_patinete` ({{ dim_patinete.filas }} patinetes) y `dim_zona` ({{ dim_zona.filas }} zonas). Las dimensiones tienen tests `unique` y `not_null`, y el hecho tiene `unique` en `trayecto` y un `relationships` hacia cada dimensión, así que ningún trayecto puede apuntar a un usuario, patinete o zona que no exista. Para comprobar que vigilan de verdad, apunté un momento el `relationships` de `usuario` a `dim_zona`: se puso rojo con todos los trayectos, y lo dejé como estaba.
+
+Las tres preguntas se calculan como **cociente de totales** (suma de euros entre suma de minutos de cada grupo), no como media de cocientes, para que un trayecto de dos minutos no pese lo mismo que uno de una hora.
+
+**Pregunta 1 · ¿Qué zona deja menos ingreso por minuto de trayecto?** **{{ pregunta_1.zona[0] }}**, con **{{ pregunta_1.ingreso_min[0] }} €/min**, muy por debajo de la siguiente, {{ pregunta_1.zona[1] }} ({{ pregunta_1.ingreso_min[1] }} €/min). La que más deja por minuto es {{ pregunta_1.zona[7] }}, con {{ pregunta_1.ingreso_min[7] }} €/min. En {{ pregunta_1.zona[0] }} se hacen trayectos largos ({{ pregunta_1.minutos[0] }} minutos en {{ pregunta_1.trayectos[0] }} trayectos) que se cobran poco.
+
+**Pregunta 2 · ¿Qué usuario gasta más batería por minuto?** **{{ pregunta_2.usuario[0] }}**, con **{{ pregunta_2.bateria_10min[0] }} % de batería cada 10 minutos**, frente a {{ pregunta_2.bateria_10min[1] }} % del segundo, {{ pregunta_2.usuario[1] }}. El que menos gasta, {{ pregunta_2.usuario[9] }}, se queda en {{ pregunta_2.bateria_10min[9] }} %.
+
+**Pregunta 3 · ¿Qué patinete acumula más incidencias por cada 100 minutos de uso?** **{{ pregunta_3.patinete[0] }}**, con **{{ pregunta_3.incidencias_100min[0] }} incidencias cada 100 minutos** ({{ pregunta_3.incidencias[0] }} incidencias en {{ pregunta_3.minutos[0] }} minutos), el doble que el segundo, {{ pregunta_3.patinete[1] }} ({{ pregunta_3.incidencias_100min[1] }}).
+
+**¿Se mantienen las respuestas de la J3?** Sí: con la remesa nueva (ahora {{ fact_trayectos.filas }} trayectos, una cuarta parte más que en la J3) siguen saliendo Campus, Marcos Martín y SC-88, y el orden de las demás apenas cambia. Las diferencias entre el primero y el segundo eran grandes y diez días más de datos no bastan para darles la vuelta. Pero se mantienen **gracias al arreglo del bloque 1**: si la batería de los {{ calidad_parte.filas[0] }} trayectos con el firmware nuevo hubiera llegado al oro como fracción, esos trayectos contarían como si casi no gastaran batería y la pregunta 2 habría castigado a quien más viajó después del 29 de abril, no a quien más gasta.
