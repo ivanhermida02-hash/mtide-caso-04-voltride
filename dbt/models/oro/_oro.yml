@@ -67,3 +67,37 @@ models:
               arguments:
                 to: ref('stg_aparcamientos')
                 field: zona
+  - name: historia_alquileres
+    description: "Historia · un alquiler por fila, con zona, hora de inicio y duración"
+    columns:
+      - name: alquiler_id
+        data_tests: [unique, not_null]
+      - name: zona
+        data_tests:
+          - not_null
+          - relationships:
+              arguments:
+                to: ref('stg_aparcamientos')
+                field: zona
+      - name: duracion_min
+        data_tests: [not_null]
+  - name: historia_hora
+    description: "Historia · alquileres por hora de inicio, en la ciudad y en Estación"
+    columns:
+      - name: hora
+        data_tests: [unique, not_null]
+  - name: historia_zona_hora
+    description: "Historia · alquileres y alquileres por plaza por zona y hora"
+    columns:
+      - name: zona
+        data_tests:
+          - not_null
+          - relationships:
+              arguments:
+                to: ref('stg_aparcamientos')
+                field: zona
+  - name: historia_contraste
+    description: "Historia · alquileres por plaza sin limpiar frente a limpio"
+    columns:
+      - name: zona
+        data_tests: [unique, not_null]
